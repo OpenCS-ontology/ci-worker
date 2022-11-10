@@ -33,27 +33,27 @@ def main():
         data = {
             'prefLabel': make_templ_arg(g, SKOS.prefLabel, '^%^'),
             'altLabel': make_templ_arg(g, SKOS.altLabel, '^%^'),
-            'broader': make_templ_arg(g, SKOS.broader, strip_iri=True),
-            'related': make_templ_arg(g, SKOS.related, strip_iri=True),
+            'broader': make_templ_arg(g, SKOS.broader, map_iris=True),
+            'related': make_templ_arg(g, SKOS.related, map_iris=True),
             'closeMatch': make_templ_arg(g, SKOS.closeMatch, '^%^'),
         }
 
         mw_filename = Path(filename.replace(in_name, out_name).replace('.ttl', '.mw'))
         mw_filename.parent.mkdir(parents=True, exist_ok=True)
         with open(mw_filename, 'wt') as fp:
-            fp.write('{{\n')
+            fp.write('{{Concept\n')
             for k, v in data.items():
                 fp.write(f'|{k}={v}\n')
             fp.write('}}\n')
 
 
-def make_templ_arg(g: Graph, p: URIRef, sep: str = ',', strip_iri: bool = False) -> str:
+def make_templ_arg(g: Graph, p: URIRef, sep: str = ',', map_iris: bool = False) -> str:
     objects = [
         str(o) + '@' + (o.language or 'en') if isinstance(o, Literal) else str(o)
         for o in g.objects(None, p)
     ]
-    if strip_iri:
-        objects = [o[o.rindex('/') + 1:] for o in objects]
+    if map_iris:
+        objects = ['OpenCS:' + o[o.rindex('/') + 1:] for o in objects]
 
     value = sep.join(objects)
     value = re.sub(
