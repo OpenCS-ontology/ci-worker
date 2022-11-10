@@ -1,3 +1,4 @@
+from functools import total_ordering
 import gzip
 from pathlib import Path
 from rdflib import Graph, Namespace, URIRef
@@ -6,6 +7,32 @@ import sys
 
 
 OCS = Namespace('https://w3id.org/ocs/ont/')
+
+
+@total_ordering
+class ConceptIRI(URIRef):
+    concept_id: int = 0
+
+    def __hash__(self):
+        return super().__hash__()
+
+    def __eq__(self, other: URIRef):
+        if isinstance(other, ConceptIRI):
+            return self.concept_id.__eq__(other.concept_id)
+        else:
+            return super().__eq__(other)
+
+    def __gt__(self, other: URIRef):
+        if isinstance(other, ConceptIRI):
+            return self.concept_id.__gt__(other.concept_id)
+        else:
+            return super().__gt__(other)
+
+    def __lt__(self, other: URIRef):
+        if isinstance(other, ConceptIRI):
+            return self.concept_id.__lt__(other.concept_id)
+        else:
+            return super().__lt__(other)
 
 
 def main():
@@ -40,8 +67,12 @@ def main():
         g1.bind('ocs', OCS)
         g1.bind('skos', SKOS)
         for p, o in g.predicate_objects(s):
-            if fix_dbpedia and isinstance(o, URIRef):
-                o = fix_o(o)
+            if isinstance(o, URIRef):
+                if fix_dbpedia:
+                    o = fix_o(o)
+                if 'w3id.org/ocs/ont/C' in o:
+                    o = ConceptIRI(str(o))
+                    o.concept_id = int(o[o.rindex('/') + 2:])
             g1.add((s, p, o))
 
         s_str = str(s)
