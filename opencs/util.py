@@ -34,7 +34,7 @@ def serialize_multi(g: Graph, base_path: str, use_gzip: bool = False):
     formats = {
         'turtle': 'ttl',
         'nt': 'nt',
-        'xml': 'xml',
+        'xml': 'rdf',
     }
 
     for format_name, extension in formats.items():
