@@ -5,7 +5,6 @@ from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import SKOS
 import sys
 
-
 OCS = Namespace('https://w3id.org/ocs/ont/')
 
 
@@ -87,7 +86,11 @@ def main():
 def fix_o(o: URIRef) -> URIRef:
     if 'dbpedia.org/' not in o:
         return o
-    return URIRef(o.replace('"', '%22').replace('^', '%5E'))
+    return URIRef(
+        o.replace('"', '%22')
+         .replace('^', '%5E')
+         .replace('%_', '%25_')
+    )
 
 
 if __name__ == "__main__":
