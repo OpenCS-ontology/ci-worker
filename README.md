@@ -3,6 +3,8 @@
 The recommended way to use this is via the provided Docker image. Just run:
 `docker run -it --rm ghcr.io/opencs-ontology/ci-worker:main python <script name.py> <args>`
 
+If you need an absolute path to the script, then just use `/app/<script name.py>`.
+
 ## Scripts
 - `split_concepts.py` – processes an RDF dump of the core ontology, splits it into individual concept files, and formats them nicely. Args:
   - input file

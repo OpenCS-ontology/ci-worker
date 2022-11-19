@@ -21,9 +21,10 @@ RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
 
 FROM base AS runtime
 
+WORKDIR /app
 # Copy virtual env from python-deps stage
-COPY --from=python-deps /.venv /.venv
-ENV PATH="/.venv/bin:$PATH"
+COPY --from=python-deps /.venv /app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Install application into container
 COPY . .
