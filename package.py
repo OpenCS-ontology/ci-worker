@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import OWL, DCTERMS
+import re
 import sys
 
 import opencs
@@ -14,13 +15,18 @@ def main():
             'Args: \n'
             '- input dir – root of OpenCS repo (no trailing slash);\n'
             '- output dir (no trailing slash)\n'
-            '- version tag for the ontology (not schema)'
+            '- version tag for the ontology (not schema)\n'
+            '  The version tag can start with "v" – it will be stripped automatically.'
         )
         exit(1)
 
     in_dir = sys.argv[1]
     out_dir = sys.argv[2]
     version = sys.argv[3]
+    if re.match(r'^v\d+\.\d+\.', version):
+        # strip "v" from the start of the version tag
+        version = version[1:]
+
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     process_simple(in_dir + '/schema/*.ttl', out_dir + '/opencs_schema')
     process_ontology(in_dir, out_dir, version)
