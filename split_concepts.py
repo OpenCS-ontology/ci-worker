@@ -1,6 +1,6 @@
 import gzip
 from pathlib import Path
-from rdflib import Graph, Namespace, URIRef
+from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.namespace import SKOS
 import sys
 
@@ -43,10 +43,13 @@ def main():
         for p, o in g.predicate_objects(s):
             if isinstance(o, URIRef):
                 if fix_dbpedia:
-                    o = fix_o(o)
+                    o = fix_o_dbpedia(o)
                 if 'w3id.org/ocs/ont/C' in o:
                     o = ConceptIRI(str(o))
                     o.concept_id = int(o[o.rindex('/') + 2:])
+            elif isinstance(o, Literal):
+                if p == SKOS.prefLabel:
+                    o = fix_o_label(o)
             g1.add((s, p, o))
 
         s_str = str(s)
@@ -58,7 +61,7 @@ def main():
     print('Done!')
 
 
-def fix_o(o: URIRef) -> URIRef:
+def fix_o_dbpedia(o: URIRef) -> URIRef:
     if 'dbpedia.org/' not in o:
         return o
     return URIRef(
@@ -66,6 +69,12 @@ def fix_o(o: URIRef) -> URIRef:
          .replace('^', '%5E')
          .replace('%_', '%25_')
     )
+
+
+def fix_o_label(o: Literal) -> Literal:
+    if o.language is None:
+        return Literal(o.value, 'en')
+    return o
 
 
 if __name__ == "__main__":
