@@ -47,6 +47,7 @@ def process_ontology(in_dir: str, out_dir: str, version: str):
     opencs.serialize_multi(g, out_dir + '/opencs_header')
     opencs.parse_all(g, in_dir + '/ontology/core/**/*.ttl')
     g.parse(in_dir + '/ontology/authors.ttl')
+    opencs.validate_shacl(g)
     opencs.serialize_multi(g, out_dir + '/opencs', use_gzip=True)
 
 
