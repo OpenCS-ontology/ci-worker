@@ -15,7 +15,13 @@ def get_releases(repository_name, token):
     G = Github(token)
     repo = G.get_repo(repository_name)
     res = repo.get_releases()
-    releases = [r.tag_name[1:] if r.tag_name[0] == 'v' else r.tag_name for r in res]
+    releases = []
+    for r in res:
+        name = r.tag_name
+        if name[0] == 'v':
+            name = name[1:]
+        if name != 'dev':
+            releases.append(name)
     return releases
 
 
