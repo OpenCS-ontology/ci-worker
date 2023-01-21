@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 rdflib = "*"
+pyyaml = "*"
+PyGithub = "*"
 
 [dev-packages]
 

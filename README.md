@@ -17,3 +17,7 @@ If you need an absolute path to the script, then just use `/app/<script name.py>
   - input dir – the root of the OpenCS repo (no trailing slash)
   - output dir (no trailing slash)
   - version tag (semver) for the main ontology – the schema is versioned manually in it Turtle file
+- `generate_pages.py` – generates files from templates for GitHub Pages. Args:
+  - current release - version tag for the main ontology
+  - repository name - name of the origin repository
+  - output path - output directory path
