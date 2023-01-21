@@ -81,5 +81,5 @@ def validate_shacl(g: Graph):
   if not conforms:
     print(results_text)
     exit(1)
-   else:
+  else:
     print('Validated! No issues found!')
