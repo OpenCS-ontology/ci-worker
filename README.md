@@ -21,3 +21,5 @@ If you need an absolute path to the script, then just use `/app/<script name.py>
   - current release - version tag for the main ontology
   - repository name - name of the origin repository
   - output path - output directory path
+- `validate.py` – validates the ontology using SHACL. Args:
+  - input dir – the root of the OpenCS
