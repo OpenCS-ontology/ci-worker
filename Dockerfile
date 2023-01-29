@@ -22,6 +22,9 @@ RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
 FROM base AS runtime
 
 WORKDIR /app
+# download robot.jar - wrapper for HermiT
+RUN wget https://github.com/ontodev/robot/releases/download/v1.9.1/robot.jar
+
 # Copy virtual env from python-deps stage
 COPY --from=python-deps /.venv /app/.venv
 ENV PATH="/app/.venv/bin:$PATH"
