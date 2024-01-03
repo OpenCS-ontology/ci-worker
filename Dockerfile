@@ -37,7 +37,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Install Java Temurin 17 using the official docker image
 ENV JAVA_HOME=/opt/java/openjdk
-COPY --from=eclipse-temurin:17 $JAVA_HOME $JAVA_HOME
+COPY --from=docker.io/eclipse-temurin:17 $JAVA_HOME $JAVA_HOME
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Install application into container
