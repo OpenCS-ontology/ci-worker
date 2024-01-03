@@ -21,6 +21,12 @@ RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
 
 FROM base AS runtime
 
+WORKDIR /opt
+RUN wget https://dlcdn.apache.org/jena/binaries/apache-jena-4.10.0.tar.gz -O jena.tar.gz
+RUN mkdir jena
+RUN tar -xzf jena.tar.gz --directory jena --strip-components=1
+RUN rm jena.tar.gz
+
 WORKDIR /app
 # download robot.jar - wrapper for HermiT
 RUN wget https://github.com/ontodev/robot/releases/download/v1.9.1/robot.jar
