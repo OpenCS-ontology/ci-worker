@@ -2,14 +2,21 @@ PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT 
-?validation 
-(IF(COUNT(?viol) = 0, "Success", "Failure" ) as ?validationNonCritical)
-(COUNT(?viol) as ?violations) 
-(COUNT(?warn) as ?warnings) 
-(COUNT(?info) as ?informations) WHERE {
+SELECT
+?validation
+(IF(?violations = 0, "Success", "Failure" ) as ?validationNonCritical)
+?violations
+?warnings
+?informations
+WHERE {
   bind(IF( exists { ?sub sh:conforms true }, "Success", "Failure") as ?validation)
-  OPTIONAL {?viol sh:resultSeverity  sh:Violation .}
-  OPTIONAL {?warn sh:resultSeverity  sh:Warning .}
-  OPTIONAL {?info sh:resultSeverity  sh:Info . }
-} group by ?validation
+  {
+    select (count(?viol) as ?violations) where {?viol sh:resultSeverity  sh:Violation .}
+  }
+  {
+    select (count(?warn) as ?warnings) where {?warn sh:resultSeverity  sh:Warning .}
+  }
+  {
+    select (count(?info) as ?informations) where {?info sh:resultSeverity  sh:Info .}
+  }
+}
