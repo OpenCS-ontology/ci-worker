@@ -1,6 +1,9 @@
-# This file includes functions used to convert
-# nodes into jsonld files
-# usage: convert_to_jsonld.py [-h] input_file [destination]
+# This file prepares concept JSONLD files and an index_dict.json file
+# for the OpenCS web browser:
+# - adds a skos:narrower property to each concept for navigation
+# - converts and saves each concept in a JSONLD file
+# - creates a (prefLabel, conceptId) dict and saves it in core/index_dict.json
+# usage: prepare_browser_files.py [-h] input_file [destination]
 
 import os
 import argparse
@@ -58,7 +61,7 @@ def get_dirname_from_concept(filename):
     Follows the same scheme for core structure of .ttl files, namely
     a directory per 1000 files"""
     concept_number = int(filename.split("C")[1])
-    directory = f"{concept_number // 1000:02}"  # 1000 files per dir
+    directory = f"{concept_number // 1000:02}"
     return directory
 
 
@@ -72,6 +75,15 @@ def load_graph(file, format="turtle"):
 def select_triples_with_query(graph: Graph, query: str):
     triples = graph.query(query)
     return triples
+
+
+def add_skos_narrower_property(graph: Graph):
+    new_graph = Graph()
+    for (s, p, o) in graph:
+        new_graph.add((s, p, o))
+        if p == SKOS.broader:
+            new_graph.add((o, SKOS.narrower, s))
+    return new_graph
 
 
 def save_graph_to_jsonld(graph: Graph, filepath: str):
@@ -105,18 +117,26 @@ def process_concepts(graph, concepts, concept_dict):
             process_single_concept(graph, concept_uri, concept_dict)
 
 
+def save_concept_dict(concept_dict):
+    if not os.path.exists("core"):
+        os.makedirs("core")
+    with open(os.path.join("core", "index_dict.json"), "w", encoding="utf-8") as file:
+        json.dump(concept_dict, file, indent=4)
+
+
 def main():
     concept_dict = {}  # dictionary to store (conceptId, prefLabel) for browser
     args = parse_arguments()
     openCS = load_graph(args.input)
+    # preprocess graph
+    openCS = add_skos_narrower_property(openCS)
     # serialise individual concepts as jsonld files
     with change_directory(args.destination):
         concept_triples = select_triples_with_query(openCS,
                                                     SELECT_CONCEPTS_QUERY)
         process_concepts(openCS, concept_triples, concept_dict)
-    # save concept_dict
-    with open("index_dict.json", "w") as file:
-        json.dump(concept_dict, file)
+        # save dictionary with (prefLabel, conceptId)
+        save_concept_dict(concept_dict)
 
 
 if __name__ == "__main__":
