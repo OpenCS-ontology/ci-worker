@@ -23,3 +23,6 @@ If you need an absolute path to the script, then just use `/app/<script name.py>
   - output path - output directory path
 - `validate.py` – validates the ontology using SHACL. Args:
   - input dir – the root of the OpenCS
+- `prepare_browser_data.py` - processes a single ontology .ttl file, adds skos:narrower property based on skos:broader, and generates JSONLD files per concept for the ontology web browser. Args:
+  - input file - the path to .ttl file
+  - output dir - output directory path
